@@ -1,0 +1,94 @@
+/* Static-clone fixes: things Squarespace's visitor JS used to do at runtime. */
+
+/* Contact form: the form component's runtime stylesheet (JS-injected) is
+   gone, so reproduce its layout for the semantic classes. */
+.react-form-contents fieldset.name {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+.react-form-contents fieldset.name legend {
+  padding: 0;
+}
+.react-form-contents fieldset.name {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 18px;
+}
+.react-form-contents fieldset.name legend {
+  grid-column: 1 / -1;
+}
+.react-form-contents .form-item,
+.react-form-contents fieldset.name .field {
+  margin-bottom: 20px;
+}
+.react-form-contents input[type="text"],
+.react-form-contents input[type="email"],
+.react-form-contents textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+.react-form-contents textarea {
+  min-height: 96px;
+}
+.react-form-contents .form-button-wrapper--align-right {
+  text-align: right;
+}
+
+/* Gallery grid sections: the GalleryGrid JS controller reads data-columns /
+   data-gutter / data-aspect-ratio and applies inline grid styles. Reproduce
+   the same layout statically from the attributes used on this site. */
+.gallery-grid--layout-grid[data-columns="2"] .gallery-grid-wrapper { grid-template-columns: repeat(2, 1fr); }
+.gallery-grid--layout-grid[data-columns="3"] .gallery-grid-wrapper { grid-template-columns: repeat(3, 1fr); }
+.gallery-grid[data-gutter="0"] .gallery-grid-wrapper { gap: 0; }
+.gallery-grid[data-gutter="4"] .gallery-grid-wrapper { gap: 4px; }
+.gallery-grid[data-gutter="9"] .gallery-grid-wrapper { gap: 9px; }
+.gallery-grid[data-gutter="15"] .gallery-grid-wrapper { gap: 15px; }
+.gallery-grid[data-gutter="20"] .gallery-grid-wrapper { gap: 20px; }
+.gallery-grid[data-gutter="82"] .gallery-grid-wrapper { gap: 82px; }
+.gallery-grid[data-aspect-ratio="square"] .gallery-grid-item-wrapper { padding-bottom: 100%; }
+.gallery-grid[data-aspect-ratio="four-three"] .gallery-grid-item-wrapper { padding-bottom: 75%; }
+.gallery-grid[data-aspect-ratio="widescreen"] .gallery-grid-item-wrapper { padding-bottom: 56.25%; }
+.gallery-grid-item img { object-fit: cover; }
+@media (max-width: 767px) {
+  .gallery-grid--layout-grid .gallery-grid-wrapper { grid-template-columns: 1fr !important; }
+}
+
+/* Scroll-reveal animations: Squarespace JS transitions these from opacity 0
+   to 1 when they enter the viewport. Without JS they stay invisible, so pin
+   every animated block to its final (visible) state. */
+.image-block-wrapper,
+.sqs-image-content,
+.sqs-dynamic-text-container,
+.image-inset,
+.image-caption-wrapper,
+.gallery-grid-item-wrapper,
+.gallery-grid-item-caption,
+.gallery-masonry-item-wrapper,
+.gallery-strips-item-wrapper,
+[class*="block-animation-"] {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* Classic image blocks: the JS normally measures and sets explicit widths.
+   Without it the figure shrink-wraps to 0 (the img inside is absolutely
+   positioned), so give the figure its natural full width. */
+.sqs-block-image .sqs-block-image-figure.intrinsic {
+  width: 100%;
+}
+
+/* Video/embed blocks: the JS normally injects the iframe and sizes it.
+   The wrapper keeps its aspect ratio via padding-bottom; pin the iframe to it. */
+.embed-block-wrapper {
+  position: relative;
+}
+.embed-block-wrapper .sqs-video-wrapper,
+.embed-block-wrapper iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
